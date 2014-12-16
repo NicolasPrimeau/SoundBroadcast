@@ -22,10 +22,11 @@ def list_devices():
         i += 1
  
 def broadcast_audio():
-    chunk = 4096  # Change if too fast/slow, never less than 1024
+    chunk = 1024*1  # Change if too fast/slow, never less than 1024
     scale = 5   # Change if too dim/bright
     exponent = 1    # Change if too little/too much difference between loud and quiet sounds
- 
+    d_rate = 44100
+
     # CHANGE THIS TO CORRECT INPUT DEVICE
     # Enable stereo mixing in your sound card
     # to make you sound output an input
@@ -36,13 +37,11 @@ def broadcast_audio():
     
     p = pyaudio.PyAudio()
     stream = p.open(format = pyaudio.paInt16,
-                    channels = 1,
-                    rate = 44100,
+                    channels = 2,
+                    rate = d_rate,
                     input = True,
                     frames_per_buffer = chunk,
                     input_device_index = device)
-    
-    print("Starting, use Ctrl+C to stop")
 
 
     send_to_server = threading.Thread(target=send_data)
@@ -59,7 +58,6 @@ def send_data():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     while 1:
         if len(q) >0:
-            print("Sending data:" + str(q[0]))
             s.sendto(q.popleft(), (UDP_IP, UDP_PORT))
 
 

@@ -6,12 +6,15 @@ import sys
 import socket
 import pyaudio
 
+chunk= 1024*1
+d_rate = 44100
+
 p = pyaudio.PyAudio()
 
 stream = p.open(format=pyaudio.paInt16,
-                channels=1,
+                channels=2,
                 output_device_index=0,
-                rate=44100,
+                rate=d_rate,
                 output = True)
 
 UDP_IP = "192.168.0.149"
@@ -20,12 +23,12 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((UDP_IP, UDP_PORT))
 
 while True:
-    data, addr = sock.recvfrom(4096)
+    data, addr = sock.recvfrom(1024*8)
     if data:
-      print("Writing Data")
       stream.write(data)
 
 stream.stop_stream()
 stream.close()
 
 p.terminate()
+
